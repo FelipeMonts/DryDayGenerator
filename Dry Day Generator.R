@@ -38,6 +38,7 @@ setwd("C:\\Felipe\\Students Projects\\MitchHunter\\DryDayGenerator\\Fw__Next_ste
 ##############################################################################################################################################################
 M1<-memory.size() ;
 T1<-Sys.time() ;
+L1<-41;
 
 Time.Memory.use<-data.frame(Memory=M1, Time=T1) ;
 
@@ -80,8 +81,9 @@ packages = c(# "agricolae",
 ipak(packages)  # Determine if packages are installed; install if needed; load all
 T2<-Sys.time() ;
 M2<-memory.size() ;
+L2<-84 ;
 
-rbind(Time.Memory.use, data.frame(Memory=M2, Time=T2))
+
 
 
 # setwd("C:/Users/mhunter/Google Drive/UMN/Personal/AWC Analysis/") # Set the working directory; not needed when working in a Project
@@ -147,7 +149,9 @@ orig = as.data.frame(orig)
 
 plot(orig$PSOLAR[1:365])  # plot daily PSOLAR values
 
-
+T3<-Sys.time() ;
+M3<-memory.size() ;
+L3<-154 ;
 
 
 #### Fit random forest models ####
@@ -165,6 +169,9 @@ orig$TM.resid = orig$TM - orig$TM.pred     # residuals
 partialPlot(rf.TM, orig, EA)
 partialPlot(rf.TM, orig, PP)
 
+T4<-Sys.time() ;
+M4<-memory.size() ;
+L4<-174;
 
 
 # Model for predicting mean vapor pressure
@@ -181,6 +188,10 @@ partialPlot(rf.EA, orig, TM)
 partialPlot(rf.EA, orig, PP)
 
 
+T5<-Sys.time() ;
+M5<-memory.size() ;
+L5<-193;
+
 # Model for predicting solar radiation
 
 rf.SOLAR = randomForest(formula = SOLAR ~ TX + TN + PP + RHN + RHX + PSOLAR + DOY + WIND, 
@@ -196,6 +207,9 @@ plot(orig$PP, orig$SOLAR.resid)  # check dependence of solar residuals on PP amo
 
 
 
+T6<-Sys.time() ;
+M6<-memory.size() ;
+L6<-210;
 
 #### Create zero-precip scenario ####
 {
@@ -227,7 +241,9 @@ dry$SOLAR = dry$SOLAR.pred + orig$SOLAR.resid        # add residuals back to SOL
 }
 
 
-
+T7<-Sys.time() ;
+M7<-memory.size() ;
+L7<-244;
 
 
 
@@ -311,7 +327,9 @@ drier.random = function(pct, orig.func, dry.func){  # pct in decimal form
 # temp5 = drier.random(.3, orig.test, dry.test)   # remove 30% of precip from random events
 # sum(temp5$PP) / sum(orig.test$PP)
 
-
+T8<-Sys.time() ;
+M8<-memory.size() ;
+L8<-330;
 
 #### Create drier weather files ####
 
@@ -418,7 +436,9 @@ for(i in 1:length(year.list)){
 }
 write.csv(dry.50random.annual, "dry.50random.annual", row.names = F)
 
-
+T9<-Sys.time() ;
+M9<-memory.size() ;
+L9<-439;
 
 
 #### Create Monthly Versions of Dry Weather Files ####
@@ -439,7 +459,14 @@ names(w.hist.mly) = c("yr", "month", "tn.mn", "tn.var", "tx.mn", "tx.var", "ref.
 w.hist.mly = w.hist.mly[order(w.hist.mly$yr),]
 
 
+Time.Memory.use<-data.frame(Memory_MB=c(M1,M2,M3,M4,M5,M6,M7,M8,M9), Time_s=c(T1,T2,T3,T4,T5,T6,T7,T8,T9), CodeLine=c(L1,L2,L3,L4,L5,L6,L7,L8,L9));
 
+Time.Memory.use$Memory_consumed_MB<-c(0,diff(Time.Memory.use$Memory)) ;
+
+Time.Memory.use$Time_used_s<-c(0,diff(Time.Memory.use$Time)) ;
+
+
+write.csv(Time.Memory.use, file="Time.Memory.use.csv") ;
 
 
 #### Calc SPEI for Dry Weather Files ####
@@ -466,6 +493,8 @@ w.hist.spei = data.frame(cbind(w.hist.junspei, w.hist.julspei, w.hist.augspei, w
 names(w.hist.spei) = c("junspei", "julspei", "augspei", "jagspei", "sumspei")
 write.csv(w.hist.spei, "w.hist.spei.csv", row.names = F)
 
+T10<-Sys.time() ;
+M10<-memory.size() ;
 
 
 
